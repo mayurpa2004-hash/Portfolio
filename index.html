@@ -1,486 +1,520 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowRight, Download, Github, Linkedin, Mail, ExternalLink, 
-  BookOpen, ChevronRight, Briefcase, FileText, Target, Lightbulb, Code, LineChart
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mayur Patil - Portfolio</title>
+  
+  <!-- Tailwind CSS for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Rock-solid React & ReactDOM (UMD versions) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  
+  <!-- Framer Motion for smooth animations -->
+  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  
+  <!-- Babel to translate the code in the browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-neutral-950 text-neutral-300 min-h-screen font-sans selection:bg-blue-500/30">
+  
+  <!-- The app will load here -->
+  <div id="root"></div>
 
-// =========================================================================
-// 📂 DATA & CONFIGURATION (YOUR "CMS")
-// IMPORTANT: Edit everything in this section to update your website!
-// You DO NOT need to touch the UI code below this section.
-// =========================================================================
+  <!-- Note: We removed type="module" to prevent CORS errors in VS Code Live Preview -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { motion, AnimatePresence } = window.Motion;
 
-// --- 1. PROFILE DATA ---
-const profileData = {
-  name: "Mayur Patil",
-  title: "Aspiring Product Manager",
-  subtitle: "Building intuitive digital products with a focus on retention and human psychology.",
-  image: "profile-photo_2.jpeg", 
-  about: "I'm a BBA student and builder who has shipped two India-first digital products from research to launch. I thrive on translating user friction into seamless digital experiences. Whether it's applying discipline from the gym to product iterations, or optimizing conversion funnels, I believe in building products that solve real problems. Currently preparing for MBA CET 2026 to elevate my strategic business acumen.",
-  philosophy: "Execution over ideation. Empathy over assumptions."
-};
+    const IconMail = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>);
+    const IconLinkedin = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>);
+    const IconGithub = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>);
+    const IconArrowRight = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>);
+    const IconTarget = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>);
+    const IconLightbulb = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>);
+    const IconLineChart = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>);
+    const IconExternalLink = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>);
+    const IconBookOpen = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>);
+    const IconChevronRight = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>);
+    const IconCode = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>);
+    const IconFileText = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>);
+    const IconDownload = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>);
 
-// --- 2. SOCIAL LINKS ---
-const socialLinksData = [
-  { name: "Email", url: "mailto:mayurpa2004@gmail.com", icon: Mail },
-  { name: "LinkedIn", url: "https://www.linkedin.com/in/mayur-patil-0a2621343/", icon: Linkedin },
-  { name: "GitHub", url: "https://github.com/mayurpa2004-hash?tab=repositories", icon: Github },
-];
+    // =========================================================================
+    // 📂 DATA & CONFIGURATION (YOUR "CMS")
+    // =========================================================================
 
-// --- 3. PROJECTS DATA ---
-const projectsData = [
-  {
-    id: "tripkhata",
-    title: "TripKhata",
-    subtitle: "Group Expense Tracking PWA",
-    productType: "Consumer Web App",
-    timeline: "Aug 2023 - Present",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop", 
-    problem: "Group travel expense splitting causes settlement confusion, lack of transparency, and awkward conversations among Indian youth.",
-    role: "Product Builder (End-to-End)",
-    features: [
-      "Designed no-login onboarding (create trip & log expense in <90s).",
-      "Built minimum-transfer settlement algorithm reducing transactions from 15+ to 3-4.",
-      "Offline-first PWA architecture for low-connectivity environments.",
-      "WhatsApp-native PDF export feature."
-    ],
-    metrics: [
-      "Interviewed 20+ travelers for MVP scope.",
-      "Iterated across 2 post-launch feedback cycles based on drop-off data."
-    ],
-    tools: ["Figma", "Notion", "ChatGPT", "GitHub"],
-    demoLink: "#", 
-    tags: ["MVP Strategy", "User Research", "PWA"]
-  },
-  {
-    id: "ironai",
-    title: "IRON AI",
-    subtitle: "AI Fitness Assistant for Hostel Students",
-    productType: "Mobile Web App",
-    timeline: "2024",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1000&auto=format&fit=crop",
-    problem: "Beginner hostel students struggle with workout consistency and motivation due to complex existing fitness apps.",
-    role: "Product Builder",
-    features: [
-      "Streak tracking, rest timers, and workout history visualization.",
-      "Offline mode and low-friction UX.",
-      "Severity-vs-effort prioritization for 6-week MVP launch."
-    ],
-    metrics: [
-      "Time-to-first-workout reduced to under 60 seconds.",
-      "Improved self-reported workout consistency by ~40% after iteration 2.",
-      "Ran 3 structured feedback cycles with 15+ real users."
-    ],
-    tools: ["Figma", "Notion", "ChatGPT", "GitHub"],
-    demoLink: "#", 
-    tags: ["Habit Loops", "Retention", "UX/UI"]
-  }
-];
+    // --- 1. PROFILE DATA ---
+    const profileData = {
+      name: "Mayur Patil",
+      title: "Aspiring Product Manager",
+      subtitle: "Building intuitive digital products with a focus on retention and human psychology.",
+      image: "profile-photo_2.jpeg", 
+      about: "I'm a BBA student and builder who has shipped two India-first digital products from research to launch. I thrive on translating user friction into seamless digital experiences. Whether it's applying discipline from the gym to product iterations, or optimizing conversion funnels, I believe in building products that solve real problems. Currently preparing for MBA CET 2026 to elevate my strategic business acumen.",
+      philosophy: "Execution over ideation. Empathy over assumptions."
+    };
 
-// --- 4. CASE STUDIES DATA ---
-const caseStudiesData = [
-  {
-    id: "1",
-    title: "Spotify's Frictionless Onboarding",
-    summary: "A teardown of how Spotify uses progressive disclosure to activate new users without overwhelming them.",
-    readTime: "4 min read",
-    category: "UX Teardown",
-    // Example of linking a PDF: Change "#" to "Spotify_Teardown.pdf"
-    link: "#" 
-  },
-  {
-    id: "2",
-    title: "Blinkit: The Psychology of 10-Min Delivery",
-    summary: "Analyzing the retention loops and behavioral nudges Blinkit uses to habituate quick commerce in India.",
-    readTime: "6 min read",
-    category: "Product Strategy",
-    link: "#"
-  },
-  {
-    id: "3",
-    title: "Why Habit Trackers Fail",
-    summary: "Lessons learned from building IronAI and studying the drop-off rates of top habit-tracking applications.",
-    readTime: "5 min read",
-    category: "Behavioral Design",
-    link: "#"
-  }
-];
+    // --- 2. SOCIAL LINKS ---
+    const socialLinksData = [
+      { name: "Email", url: "mailto:mayurpa2004@gmail.com", icon: IconMail },
+      { name: "LinkedIn", url: "https://www.linkedin.com/in/mayur-patil-0a2621343/", icon: IconLinkedin },
+      { name: "GitHub", url: "https://github.com/mayurpa2004-hash?tab=repositories", icon: IconGithub },
+    ];
 
-// --- 5. SKILLS DATA ---
-const skillsData = {
-  "Product & Business": [
-    "Product Thinking", "User Research", "MVP Strategy", 
-    "Feedback Analysis", "Iterative Development", "Feature Prioritization", 
-    "Market Research", "Competitive Analysis", "Structured Problem Solving"
-  ],
-  "Tools & Design": [
-    "Figma (Basic)", "Notion", "MS Excel", "Google Sheets", 
-    "Canva", "Digital Marketing", "Claude", "ChatGPT"
-  ],
-  "Certifications": [
-    "Product Management (Coursera)", 
-    "Google Digital Marketing", 
-    "Microsoft Excel (Coursera)"
-  ]
-};
+    // --- 3. PROJECTS DATA ---
+    const projectsData = [
+      {
+        id: "tripkhata",
+        title: "TripKhata",
+        subtitle: "Group Expense Tracking PWA",
+        productType: "Consumer Web App",
+        timeline: "Aug 2023 - Present",
+        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop", 
+        problem: "Group travel expense splitting causes settlement confusion, lack of transparency, and awkward conversations among Indian youth.",
+        role: "Product Builder (End-to-End)",
+        features: [
+          "Designed no-login onboarding (create trip & log expense in <90s).",
+          "Built minimum-transfer settlement algorithm reducing transactions from 15+ to 3-4.",
+          "Offline-first PWA architecture for low-connectivity environments.",
+          "WhatsApp-native PDF export feature."
+        ],
+        metrics: [
+          "Interviewed 20+ travelers for MVP scope.",
+          "Iterated across 2 post-launch feedback cycles based on drop-off data."
+        ],
+        tools: ["Figma", "Notion", "ChatGPT", "GitHub"],
+        demoLink: "#", 
+        tags: ["MVP Strategy", "User Research", "PWA"]
+      },
+      {
+        id: "ironai",
+        title: "IRON AI",
+        subtitle: "AI Fitness Assistant for Hostel Students",
+        productType: "Mobile Web App",
+        timeline: "2024",
+        image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1000&auto=format&fit=crop",
+        problem: "Beginner hostel students struggle with workout consistency and motivation due to complex existing fitness apps.",
+        role: "Product Builder",
+        features: [
+          "Streak tracking, rest timers, and workout history visualization.",
+          "Offline mode and low-friction UX.",
+          "Severity-vs-effort prioritization for 6-week MVP launch."
+        ],
+        metrics: [
+          "Time-to-first-workout reduced to under 60 seconds.",
+          "Improved self-reported workout consistency by ~40% after iteration 2.",
+          "Ran 3 structured feedback cycles with 15+ real users."
+        ],
+        tools: ["Figma", "Notion", "ChatGPT", "GitHub"],
+        demoLink: "#", 
+        tags: ["Habit Loops", "Retention", "UX/UI"]
+      }
+    ];
 
-// --- 6. CURRENTLY EXPLORING DATA ---
-const currentlyExploringData = [
-  "AI integration in everyday consumer apps.",
-  "Digital Marketing strategies for zero-CAC acquisition.",
-  "Behavioral psychology for product retention.",
-  "Preparation for MBA CET 2026."
-];
+    // --- 4. CASE STUDIES DATA ---
+    const caseStudiesData = [
+      {
+        id: "1",
+        title: "Spotify's Frictionless Onboarding",
+        summary: "A teardown of how Spotify uses progressive disclosure to activate new users without overwhelming them.",
+        readTime: "4 min read",
+        category: "UX Teardown",
+        // HOW TO LINK PDF: Just change "#" to the name of your file, like "Spotify_Teardown.pdf"
+        link: "#"
+      },
+      {
+        id: "2",
+        title: "Blinkit: The Psychology of 10-Min Delivery",
+        summary: "Analyzing the retention loops and behavioral nudges Blinkit uses to habituate quick commerce in India.",
+        readTime: "6 min read",
+        category: "Product Strategy",
+        link: "#"
+      },
+      {
+        id: "3",
+        title: "Why Habit Trackers Fail",
+        summary: "Lessons learned from building IronAI and studying the drop-off rates of top habit-tracking applications.",
+        readTime: "5 min read",
+        category: "Behavioral Design",
+        link: "#"
+      }
+    ];
 
-// --- 7. RESUME DATA ---
-const resumeData = {
-  fileUrl: "PM Resume_2.pdf", 
-  version: "Updated May 2026",
-  highlights: ["2 Shipped Products", "Coursera PM Certified", "BBA 8.0 CGPA"]
-};
+    // --- 5. SKILLS DATA ---
+    const skillsData = {
+      "Product & Business": [
+        "Product Thinking", "User Research", "MVP Strategy", 
+        "Feedback Analysis", "Iterative Development", "Feature Prioritization", 
+        "Market Research", "Competitive Analysis", "Structured Problem Solving"
+      ],
+      "Tools & Design": [
+        "Figma (Basic)", "Notion", "MS Excel", "Google Sheets", 
+        "Canva", "Digital Marketing", "Claude", "ChatGPT"
+      ],
+      "Certifications": [
+        "Product Management (Coursera)", 
+        "Google Digital Marketing", 
+        "Microsoft Excel (Coursera)"
+      ]
+    };
 
-// =========================================================================
-// 🎨 UI COMPONENTS & ARCHITECTURE 
-// (You generally don't need to edit below this line unless changing design)
-// =========================================================================
+    // --- 6. CURRENTLY EXPLORING DATA ---
+    const currentlyExploringData = [
+      "AI integration in everyday consumer apps.",
+      "Digital Marketing strategies for zero-CAC acquisition.",
+      "Behavioral psychology for product retention.",
+      "Preparation for MBA CET 2026."
+    ];
 
-const Section = ({ id, title, children, className = "" }) => (
-  <section id={id} className={`py-24 px-6 md:px-12 max-w-6xl mx-auto ${className}`}>
-    {title && (
-      <motion.h2 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-3xl md:text-4xl font-bold text-neutral-100 mb-12 tracking-tight"
-      >
-        {title}
-      </motion.h2>
-    )}
-    {children}
-  </section>
-);
+    // --- 7. RESUME DATA ---
+    const resumeData = {
+      fileUrl: "PM Resume_2.pdf", 
+      version: "Updated May 2026",
+      highlights: ["2 Shipped Products", "Coursera PM Certified", "BBA 8.0 CGPA"]
+    };
 
-const Navbar = () => {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-800">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#" className="text-neutral-100 font-semibold text-lg tracking-wide">
-          MP<span className="text-blue-500">.</span>
-        </a>
-        <div className="hidden md:flex space-x-8 text-sm font-medium text-neutral-400">
-          <a href="#about" className="hover:text-neutral-100 transition-colors">About</a>
-          <a href="#projects" className="hover:text-neutral-100 transition-colors">Projects</a>
-          <a href="#case-studies" className="hover:text-neutral-100 transition-colors">Case Studies</a>
-          <a href="#resume" className="hover:text-neutral-100 transition-colors">Resume</a>
-        </div>
-        <a 
-          href="#resume" 
-          className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-full text-sm font-medium hover:bg-white transition-colors"
-        >
-          View Resume
-        </a>
-      </div>
-    </nav>
-  );
-};
+    // =========================================================================
+    // 🎨 UI COMPONENTS & ARCHITECTURE 
+    // =========================================================================
 
-export default function App() {
-  return (
-    <div className="bg-neutral-950 text-neutral-300 min-h-screen font-sans selection:bg-blue-500/30">
-      <Navbar />
-
-      {/* 🏠 HERO SECTION */}
-      <section className="pt-40 pb-20 px-6 md:px-12 max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12 md:gap-24">
-        <div className="flex-1 space-y-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="inline-block px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-sm font-medium text-neutral-400"
+    const Section = ({ id, title, children, className = "" }) => (
+      <section id={id} className={`py-24 px-6 md:px-12 max-w-6xl mx-auto ${className}`}>
+        {title && (
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-neutral-100 mb-12 tracking-tight"
           >
-            Open for APM & Product Intern Roles
-          </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold text-neutral-100 tracking-tight leading-tight"
-          >
-            Hi, I'm {profileData.name.split(' ')[0]}.<br/>
-            <span className="text-neutral-500">I build products.</span>
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="text-lg md:text-xl text-neutral-400 max-w-xl leading-relaxed"
-          >
-            {profileData.subtitle}
-          </motion.p>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="flex flex-wrap items-center gap-4 pt-4"
-          >
-            <a href="#projects" className="px-6 py-3 bg-neutral-100 text-neutral-950 font-medium rounded-lg hover:bg-white transition-colors flex items-center gap-2">
-              See my work <ArrowRight size={18} />
-            </a>
-            <div className="flex items-center gap-3 ml-2">
-              {socialLinksData.map((social, i) => {
-                const Icon = social.icon;
-                return (
-                  <a key={i} href={social.url} target="_blank" rel="noreferrer" className="p-3 bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-neutral-100 hover:border-neutral-700 transition-all">
-                    <Icon size={20} />
-                  </a>
-                )
-              })}
-            </div>
-          </motion.div>
-        </div>
-        
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}
-          className="w-48 h-48 md:w-72 md:h-72 shrink-0 relative"
-        >
-          <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full"></div>
-          <img 
-            src={profileData.image} 
-            alt={profileData.name} 
-            className="w-full h-full object-cover rounded-3xl border border-neutral-800 shadow-2xl relative z-10"
-          />
-        </motion.div>
+            {title}
+          </motion.h2>
+        )}
+        {children}
       </section>
+    );
 
-      {/* 👨‍💻 ABOUT SECTION */}
-      <Section id="about" title="About Me">
-        <div className="grid md:grid-cols-3 gap-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="md:col-span-2 space-y-6 text-neutral-400 text-lg leading-relaxed"
-          >
-            <p>{profileData.about}</p>
-            <div className="pt-6 grid sm:grid-cols-2 gap-4">
-              {currentlyExploringData.map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <Target size={20} className="text-blue-500 shrink-0 mt-1" />
-                  <span className="text-sm">{item}</span>
-                </div>
-              ))}
+    const Navbar = () => {
+      return (
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-800">
+          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" className="text-neutral-100 font-semibold text-lg tracking-wide">
+              MP<span className="text-blue-500">.</span>
+            </a>
+            <div className="hidden md:flex space-x-8 text-sm font-medium text-neutral-400">
+              <a href="#about" className="hover:text-neutral-100 transition-colors">About</a>
+              <a href="#projects" className="hover:text-neutral-100 transition-colors">Projects</a>
+              <a href="#case-studies" className="hover:text-neutral-100 transition-colors">Case Studies</a>
+              <a href="#resume" className="hover:text-neutral-100 transition-colors">Resume</a>
             </div>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="bg-neutral-900/50 border border-neutral-800 p-8 rounded-2xl flex flex-col justify-center"
-          >
-            <Lightbulb size={32} className="text-neutral-100 mb-6" />
-            <h3 className="text-neutral-100 font-semibold mb-2">My Philosophy</h3>
-            <p className="text-neutral-400 italic">"{profileData.philosophy}"</p>
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* 📂 PROJECTS SECTION */}
-      <Section id="projects" title="Featured Projects">
-        <div className="space-y-24">
-          {projectsData.map((project, index) => (
-            <motion.div 
-              key={project.id}
-              initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              className="group grid md:grid-cols-2 gap-12 items-center"
+            <a 
+              href="#resume" 
+              className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-full text-sm font-medium hover:bg-white transition-colors"
             >
-              <div className={`space-y-6 ${index % 2 !== 0 ? 'md:order-2' : ''}`}>
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full text-xs font-medium text-neutral-300">
-                      {project.productType}
-                    </span>
-                    <span className="text-sm text-neutral-500 font-medium">{project.timeline}</span>
-                  </div>
-                  <h3 className="text-3xl font-bold text-neutral-100">{project.title}</h3>
-                  <p className="text-xl text-neutral-400 mt-2">{project.subtitle}</p>
-                </div>
-                
-                <div className="bg-neutral-900/30 p-5 rounded-xl border border-neutral-800/50">
-                  <h4 className="text-sm font-semibold text-neutral-100 mb-2 flex items-center gap-2">
-                    <Target size={16} className="text-red-400"/> The Problem
-                  </h4>
-                  <p className="text-sm text-neutral-400">{project.problem}</p>
-                </div>
+              View Resume
+            </a>
+          </div>
+        </nav>
+      );
+    };
 
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-100 mb-3">Key Features & Metrics</h4>
-                  <ul className="space-y-2">
-                    {project.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm text-neutral-400">
-                        <span className="text-blue-500 mt-0.5">•</span> {feature}
-                      </li>
-                    ))}
-                    {project.metrics.map((metric, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm text-neutral-400">
-                        <LineChart size={14} className="text-green-500 mt-0.5 shrink-0" /> <span className="font-medium text-neutral-300">{metric}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+    function App() {
+      return (
+        <div>
+          <Navbar />
 
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag, i) => (
-                    <span key={i} className="px-3 py-1 bg-neutral-900 text-neutral-400 rounded-md text-xs border border-neutral-800">
-                      {tag}
-                    </span>
+          {/* 🏠 HERO SECTION */}
+          <section className="pt-40 pb-20 px-6 md:px-12 max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12 md:gap-24">
+            <div className="flex-1 space-y-6">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                className="inline-block px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-sm font-medium text-neutral-400"
+              >
+                Open for APM & Product Intern Roles
+              </motion.div>
+              
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                className="text-5xl md:text-7xl font-bold text-neutral-100 tracking-tight leading-tight"
+              >
+                Hi, I'm {profileData.name.split(' ')[0]}.<br/>
+                <span className="text-neutral-500">I build products.</span>
+              </motion.h1>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                className="text-lg md:text-xl text-neutral-400 max-w-xl leading-relaxed"
+              >
+                {profileData.subtitle}
+              </motion.p>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                className="flex flex-wrap items-center gap-4 pt-4"
+              >
+                <a href="#projects" className="px-6 py-3 bg-neutral-100 text-neutral-950 font-medium rounded-lg hover:bg-white transition-colors flex items-center gap-2">
+                  See my work <IconArrowRight size={18} />
+                </a>
+                <div className="flex items-center gap-3 ml-2">
+                  {socialLinksData.map((social, i) => {
+                    const Icon = social.icon;
+                    return (
+                      <a key={i} href={social.url} target="_blank" rel="noreferrer" className="p-3 bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-neutral-100 hover:border-neutral-700 transition-all">
+                        <Icon size={20} />
+                      </a>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            </div>
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}
+              className="w-48 h-48 md:w-72 md:h-72 shrink-0 relative"
+            >
+              <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full"></div>
+              <img 
+                src={profileData.image} 
+                alt={profileData.name} 
+                className="w-full h-full object-cover rounded-3xl border border-neutral-800 shadow-2xl relative z-10"
+              />
+            </motion.div>
+          </section>
+
+          {/* 👨‍💻 ABOUT SECTION */}
+          <Section id="about" title="About Me">
+            <div className="grid md:grid-cols-3 gap-12">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                className="md:col-span-2 space-y-6 text-neutral-400 text-lg leading-relaxed"
+              >
+                <p>{profileData.about}</p>
+                <div className="pt-6 grid sm:grid-cols-2 gap-4">
+                  {currentlyExploringData.map((item, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <IconTarget size={20} className="text-blue-500 shrink-0 mt-1" />
+                      <span className="text-sm">{item}</span>
+                    </div>
                   ))}
                 </div>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                className="bg-neutral-900/50 border border-neutral-800 p-8 rounded-2xl flex flex-col justify-center"
+              >
+                <IconLightbulb size={32} className="text-neutral-100 mb-6" />
+                <h3 className="text-neutral-100 font-semibold mb-2">My Philosophy</h3>
+                <p className="text-neutral-400 italic">"{profileData.philosophy}"</p>
+              </motion.div>
+            </div>
+          </Section>
 
+          {/* 📂 PROJECTS SECTION */}
+          <Section id="projects" title="Featured Projects">
+            <div className="space-y-24">
+              {projectsData.map((project, index) => (
+                <motion.div 
+                  key={project.id}
+                  initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                  className="group grid md:grid-cols-2 gap-12 items-center"
+                >
+                  <div className={`space-y-6 ${index % 2 !== 0 ? 'md:order-2' : ''}`}>
+                    <div>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full text-xs font-medium text-neutral-300">
+                          {project.productType}
+                        </span>
+                        <span className="text-sm text-neutral-500 font-medium">{project.timeline}</span>
+                      </div>
+                      <h3 className="text-3xl font-bold text-neutral-100">{project.title}</h3>
+                      <p className="text-xl text-neutral-400 mt-2">{project.subtitle}</p>
+                    </div>
+                    
+                    <div className="bg-neutral-900/30 p-5 rounded-xl border border-neutral-800/50">
+                      <h4 className="text-sm font-semibold text-neutral-100 mb-2 flex items-center gap-2">
+                        <IconTarget size={16} className="text-red-400"/> The Problem
+                      </h4>
+                      <p className="text-sm text-neutral-400">{project.problem}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-neutral-100 mb-3">Key Features & Metrics</h4>
+                      <ul className="space-y-2">
+                        {project.features.map((feature, i) => (
+                          <li key={i} className="flex items-start gap-3 text-sm text-neutral-400">
+                            <span className="text-blue-500 mt-0.5">•</span> {feature}
+                          </li>
+                        ))}
+                        {project.metrics.map((metric, i) => (
+                          <li key={i} className="flex items-start gap-3 text-sm text-neutral-400">
+                            <IconLineChart size={14} className="text-green-500 mt-0.5 shrink-0" /> <span className="font-medium text-neutral-300">{metric}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag, i) => (
+                        <span key={i} className="px-3 py-1 bg-neutral-900 text-neutral-400 rounded-md text-xs border border-neutral-800">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="pt-4">
+                      <a href={project.demoLink} className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-100 text-neutral-950 font-medium rounded-lg hover:bg-white transition-colors text-sm">
+                        View Project <IconExternalLink size={16} />
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className={`relative ${index % 2 !== 0 ? 'md:order-1' : ''}`}>
+                    <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900">
+                      <img 
+                        src={project.image} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Section>
+
+          {/* 🧠 CASE STUDIES */}
+          <Section id="case-studies" title="Case Studies & Thinking">
+            <div className="grid md:grid-cols-3 gap-6">
+              {caseStudiesData.map((study) => (
+                <motion.a
+                  key={study.id}
+                  href={study.link}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                  className="group block p-6 bg-neutral-900/50 border border-neutral-800 rounded-2xl hover:bg-neutral-900 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded">
+                      {study.category}
+                    </span>
+                    <span className="text-xs text-neutral-500 flex items-center gap-1">
+                      <IconBookOpen size={12} /> {study.readTime}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-neutral-100 mb-2 group-hover:text-blue-400 transition-colors">
+                    {study.title}
+                  </h3>
+                  <p className="text-sm text-neutral-400 mb-6">
+                    {study.summary}
+                  </p>
+                  <div className="flex items-center text-sm font-medium text-neutral-300 group-hover:text-neutral-100">
+                    Read Document <IconChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Section>
+
+          {/* 📈 SKILLS & TOOLS */}
+          <Section id="skills" title="Skills & Competencies">
+            <div className="grid md:grid-cols-3 gap-8">
+              {Object.entries(skillsData).map(([category, skills], idx) => (
+                <motion.div 
+                  key={category}
+                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }}
+                  className="space-y-4"
+                >
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-500 flex items-center gap-2">
+                    {category === 'Tools & Design' ? <IconCode size={16}/> : category === 'Certifications' ? <IconFileText size={16}/> : <IconTarget size={16}/>}
+                    {category}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((skill, i) => (
+                      <span key={i} className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 text-neutral-300 text-sm rounded-lg hover:border-neutral-600 transition-colors">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Section>
+
+          {/* 📜 RESUME SECTION */}
+          <Section id="resume" title="Resume">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-12"
+            >
+              <div className="flex-1 space-y-6">
+                <h3 className="text-2xl font-bold text-neutral-100">Looking for APM & Intern Roles</h3>
+                <p className="text-neutral-400 leading-relaxed">
+                  I am actively looking for Product Management Internship and APM opportunities at early-stage startups and product teams where I can contribute to user research, MVP scoping, and iterative development.
+                </p>
+                <ul className="space-y-2">
+                  {resumeData.highlights.map((highlight, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm text-neutral-300 font-medium">
+                      <IconTarget size={14} className="text-blue-500" /> {highlight}
+                    </li>
+                  ))}
+                </ul>
                 <div className="pt-4">
-                  <a href={project.demoLink} className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-100 text-neutral-950 font-medium rounded-lg hover:bg-white transition-colors text-sm">
-                    View Project <ExternalLink size={16} />
+                  <a 
+                    href={resumeData.fileUrl} 
+                    download
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Download Full Resume <IconDownload size={18} />
                   </a>
+                  <p className="text-xs text-neutral-500 mt-3">{resumeData.version}</p>
                 </div>
               </div>
               
-              <div className={`relative ${index % 2 !== 0 ? 'md:order-1' : ''}`}>
-                <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900">
-                  <img 
-                    src={project.image} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
-                  />
+              <div className="w-full md:w-1/3 relative group">
+                <div className="aspect-[1/1.4] bg-white rounded-lg shadow-2xl p-6 flex flex-col transform group-hover:-translate-y-2 group-hover:rotate-1 transition-all duration-300 border border-neutral-200">
+                  <div className="h-4 w-1/2 bg-neutral-800 mb-2 rounded-sm"></div>
+                  <div className="h-2 w-1/3 bg-neutral-400 mb-6 rounded-sm"></div>
+                  <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
+                  <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
+                  <div className="h-2 w-3/4 bg-neutral-200 mb-6 rounded-sm"></div>
+                  <div className="h-3 w-1/4 bg-neutral-800 mb-3 rounded-sm"></div>
+                  <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
+                  <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
+                  <div className="h-2 w-4/5 bg-neutral-200 mb-6 rounded-sm"></div>
+                  <div className="mt-auto h-16 bg-neutral-100 rounded border border-neutral-200"></div>
                 </div>
+                <a href={resumeData.fileUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm cursor-pointer">
+                   <span className="px-4 py-2 bg-white text-black text-sm font-semibold rounded-full shadow-lg flex items-center gap-2">
+                     <IconFileText size={16}/> Preview PDF
+                   </span>
+                </a>
               </div>
             </motion.div>
-          ))}
-        </div>
-      </Section>
+          </Section>
 
-      {/* 🧠 CASE STUDIES */}
-      <Section id="case-studies" title="Case Studies & Thinking">
-        <div className="grid md:grid-cols-3 gap-6">
-          {caseStudiesData.map((study) => (
-            <motion.a
-              key={study.id}
-              href={study.link}
-              target="_blank"
-              rel="noreferrer"
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              className="group block p-6 bg-neutral-900/50 border border-neutral-800 rounded-2xl hover:bg-neutral-900 transition-colors"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded">
-                  {study.category}
-                </span>
-                <span className="text-xs text-neutral-500 flex items-center gap-1">
-                  <BookOpen size={12} /> {study.readTime}
-                </span>
-              </div>
-              <h3 className="text-lg font-bold text-neutral-100 mb-2 group-hover:text-blue-400 transition-colors">
-                {study.title}
-              </h3>
-              <p className="text-sm text-neutral-400 mb-6">
-                {study.summary}
+          {/* FOOTER */}
+          <footer className="border-t border-neutral-900 mt-24 py-12">
+            <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+              <p className="text-neutral-500 text-sm">
+                © {new Date().getFullYear()} {profileData.name}. Designed & Built with intent.
               </p>
-              <div className="flex items-center text-sm font-medium text-neutral-300 group-hover:text-neutral-100">
-                View Case Study <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </motion.a>
-          ))}
-        </div>
-      </Section>
-
-      {/* 📈 SKILLS & TOOLS */}
-      <Section id="skills" title="Skills & Competencies">
-        <div className="grid md:grid-cols-3 gap-8">
-          {Object.entries(skillsData).map(([category, skills], idx) => (
-            <motion.div 
-              key={category}
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }}
-              className="space-y-4"
-            >
-              <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-500 flex items-center gap-2">
-                {category === 'Tools & Design' ? <Code size={16}/> : category === 'Certifications' ? <FileText size={16}/> : <Target size={16}/>}
-                {category}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((skill, i) => (
-                  <span key={i} className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 text-neutral-300 text-sm rounded-lg hover:border-neutral-600 transition-colors">
-                    {skill}
-                  </span>
+              <div className="flex items-center gap-6">
+                {socialLinksData.map((social, i) => (
+                  <a key={i} href={social.url} target="_blank" rel="noreferrer" className="text-sm text-neutral-400 hover:text-neutral-100 transition-colors">
+                    {social.name}
+                  </a>
                 ))}
               </div>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
-
-      {/* 📜 RESUME SECTION */}
-      <Section id="resume" title="Resume">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-12"
-        >
-          <div className="flex-1 space-y-6">
-            <h3 className="text-2xl font-bold text-neutral-100">Looking for APM & Intern Roles</h3>
-            <p className="text-neutral-400 leading-relaxed">
-              I am actively looking for Product Management Internship and APM opportunities at early-stage startups and product teams where I can contribute to user research, MVP scoping, and iterative development.
-            </p>
-            <ul className="space-y-2">
-              {resumeData.highlights.map((highlight, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-neutral-300 font-medium">
-                  <Target size={14} className="text-blue-500" /> {highlight}
-                </li>
-              ))}
-            </ul>
-            <div className="pt-4">
-              <a 
-                href={resumeData.fileUrl} 
-                download
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Download Full Resume <Download size={18} />
-              </a>
-              <p className="text-xs text-neutral-500 mt-3">{resumeData.version}</p>
             </div>
-          </div>
-          
-          <div className="w-full md:w-1/3 relative group">
-            {/* Minimal CSS representation of a Resume */}
-            <div className="aspect-[1/1.4] bg-white rounded-lg shadow-2xl p-6 flex flex-col transform group-hover:-translate-y-2 group-hover:rotate-1 transition-all duration-300 border border-neutral-200">
-              <div className="h-4 w-1/2 bg-neutral-800 mb-2 rounded-sm"></div>
-              <div className="h-2 w-1/3 bg-neutral-400 mb-6 rounded-sm"></div>
-              
-              <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
-              <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
-              <div className="h-2 w-3/4 bg-neutral-200 mb-6 rounded-sm"></div>
-
-              <div className="h-3 w-1/4 bg-neutral-800 mb-3 rounded-sm"></div>
-              <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
-              <div className="h-2 w-full bg-neutral-200 mb-2 rounded-sm"></div>
-              <div className="h-2 w-4/5 bg-neutral-200 mb-6 rounded-sm"></div>
-
-              <div className="mt-auto h-16 bg-neutral-100 rounded border border-neutral-200"></div>
-            </div>
-            <a href={resumeData.fileUrl} target="_blank" rel="noreferrer" className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm cursor-pointer">
-               <span className="px-4 py-2 bg-white text-black text-sm font-semibold rounded-full shadow-lg flex items-center gap-2">
-                 <FileText size={16}/> Preview PDF
-               </span>
-            </a>
-          </div>
-        </motion.div>
-      </Section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-neutral-900 mt-24 py-12">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-neutral-500 text-sm">
-            © {new Date().getFullYear()} {profileData.name}. Designed & Built with intent.
-          </p>
-          <div className="flex items-center gap-6">
-            {socialLinksData.map((social, i) => (
-              <a key={i} href={social.url} target="_blank" rel="noreferrer" className="text-sm text-neutral-400 hover:text-neutral-100 transition-colors">
-                {social.name}
-              </a>
-            ))}
-          </div>
+          </footer>
         </div>
-      </footer>
-    </div>
-  );
-}
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

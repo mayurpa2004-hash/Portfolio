@@ -16,8 +16,8 @@
   <!-- Framer Motion for smooth animations -->
   <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
 
-  <!-- Babel to translate the code in the browser -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Babel pinned to a stable version to translate the code in the browser -->
+  <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 </head>
 
 <body class="bg-neutral-950 text-neutral-300 min-h-screen font-sans selection:bg-blue-500/30">
@@ -25,16 +25,30 @@
   <!-- The app will load here -->
   <div id="root"></div>
 
-  <!-- Note: We removed type="module" to prevent CORS errors in VS Code Live Preview -->
-  <script type="text/babel">
+  <!-- Adding data-presets="react" tells Babel to strictly compile JSX and avoid injecting any ES module imports -->
+  <script type="text/babel" data-presets="react">
+    /** @jsx React.createElement */
+    /** @jsxFrag React.Fragment */
+
     const { useState, useEffect } = React;
+    
+    // Rewritten without the rest operator (...props) to avoid triggering Babel polyfill imports
     const createFallbackMotionComponent = (tag) => {
-      return ({ children, initial, animate, transition, whileInView, viewport, ...props }) => {
-        return React.createElement(tag, props, children);
+      return (props) => {
+        const passProps = {};
+        for (const key in props) {
+          if (!['children', 'initial', 'animate', 'transition', 'whileInView', 'viewport'].includes(key)) {
+            passProps[key] = props[key];
+          }
+        }
+        return React.createElement(tag, passProps, props.children);
       };
     };
-    const motionSource = window.Motion?.motion || window.FramerMotion?.motion;
-    const animatePresenceSource = window.Motion?.AnimatePresence || window.FramerMotion?.AnimatePresence;
+    
+    // Safely check for Motion without optional chaining (?.) which can trigger babel polyfills
+    const motionSource = (window.Motion && window.Motion.motion) || (window.FramerMotion && window.FramerMotion.motion);
+    const animatePresenceSource = (window.Motion && window.Motion.AnimatePresence) || (window.FramerMotion && window.FramerMotion.AnimatePresence);
+    
     const motion = motionSource || new Proxy({}, {
       get: (_, tag) => createFallbackMotionComponent(tag),
     });
@@ -53,6 +67,7 @@
     const IconCode = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>);
     const IconFileText = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>);
     const IconDownload = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>);
+    const IconAward = ({ size = 20, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>);
 
     // =========================================================================
     // 📂 DATA & CONFIGURATION
@@ -70,7 +85,7 @@
 
     // --- 2. SOCIAL LINKS ---
     const socialLinksData = [
-      { name: "Email", url: "mailto:mayurpa2004@gmail.com", icon: IconMail },
+      { name: "Email", url: "mailto:patilmayur161625@gmail.com", icon: IconMail },
       { name: "LinkedIn", url: "https://www.linkedin.com/in/mayur-patil-0a2621343/", icon: IconLinkedin },
       { name: "GitHub", url: "https://github.com/mayurpa2004-hash?tab=repositories", icon: IconGithub },
     ];
@@ -154,12 +169,12 @@
       ],
       "Tools & Design": [
         "Figma (Basic)", "Notion", "MS Excel", "Google Sheets",
-        "Canva", "Claude", "ChatGPT"
+        "Canva", "Digital Marketing", "Claude", "ChatGPT"
       ],
       "Certifications": [
         "Product Management (Coursera)",
-        "Microsoft Excel Beginners To Advance (Skill Course)",
-        "SQL Course (Self Learning) (Skill Course)"
+        "Google Digital Marketing",
+        "Microsoft Excel (Coursera)"
       ]
     };
 
@@ -173,10 +188,35 @@
 
     // --- 7. RESUME DATA ---
     const resumeData = {
-      fileUrl: "Mayur_Patil_Resume.pdf", // Linked!
-      version: "Updated May 2026",
+      fileUrl: "Mayur_Patil_Resume.pdf",
+      version: "Updated June 2026",
       highlights: ["2 Shipped Products", "Coursera PM Certified", "BBA 8.0 CGPA"]
     };
+
+    // --- 8. CERTIFICATES DATA ---
+    const certificatesData = [
+      {
+        id: "pm-coursera",
+        title: "Product Management: An Introduction",
+        issuer: "IBM / Coursera",
+        image: "PM an Introduction-1.png",
+        skills: "Product Strategy, MVP Scoping, Agile"
+      },
+      {
+        id: "excel",
+        title: "Microsoft Excel Beginners To Advance",
+        issuer: "Skill Course",
+        image: "Advanced Excel.png",
+        skills: "Data Analysis, Pivot Tables, VLOOKUP"
+      },
+      {
+        id: "sql",
+        title: "SQL Course (Self Learning)",
+        issuer: "Skill Course",
+        image: "SQL Certificate_SC-1B9A944CCC.png",
+        skills: "Database Querying, Relational Databases"
+      }
+    ];
 
     // =========================================================================
     // 🎨 UI COMPONENTS & ARCHITECTURE 
@@ -209,6 +249,7 @@
               <a href="#about" className="hover:text-neutral-100 transition-colors">About</a>
               <a href="#projects" className="hover:text-neutral-100 transition-colors">Projects</a>
               <a href="#case-studies" className="hover:text-neutral-100 transition-colors">Case Studies</a>
+              <a href="#certificates" className="hover:text-neutral-100 transition-colors">Certificates</a>
               <a href="#resume" className="hover:text-neutral-100 transition-colors">Resume</a>
             </div>
             <a
@@ -445,6 +486,46 @@
             </div>
           </Section>
 
+          {/* 🏆 CERTIFICATES PORTFOLIO */}
+          <Section id="certificates" title="Licenses & Certifications">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {certificatesData.map((cert, index) => (
+                <motion.div
+                  key={cert.id}
+                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}
+                  className="group bg-neutral-900/40 border border-neutral-800 rounded-2xl overflow-hidden hover:border-neutral-600 transition-colors flex flex-col"
+                >
+                  <div className="aspect-[4/3] bg-neutral-900 overflow-hidden relative border-b border-neutral-800 flex items-center justify-center p-4">
+                     <img 
+                        src={cert.image} 
+                        alt={cert.title} 
+                        className="max-w-full max-h-full object-contain shadow-md group-hover:scale-105 transition-transform duration-500 rounded" 
+                     />
+                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                        <a href={cert.image} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 bg-neutral-100 text-neutral-900 text-sm font-semibold rounded-full flex items-center gap-2 hover:scale-105 transition-transform">
+                           <IconExternalLink size={16} /> View Certificate
+                        </a>
+                     </div>
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-neutral-100 leading-tight mb-2">{cert.title}</h3>
+                      <div className="flex items-center gap-2 text-sm text-neutral-400 mb-4">
+                        <IconAward size={14} className="text-blue-500" />
+                        <span>{cert.issuer}</span>
+                      </div>
+                    </div>
+                    <div className="mt-auto">
+                       <span className="text-xs font-medium bg-neutral-800 text-neutral-300 px-3 py-1 rounded-full border border-neutral-700">
+                          {cert.skills}
+                       </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Section>
+
           {/* 📜 RESUME SECTION */}
           <Section id="resume" title="Resume">
             <motion.div
@@ -522,5 +603,3 @@
 </body>
 
 </html>
-
-```
